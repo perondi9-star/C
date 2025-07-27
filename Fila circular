@@ -1,0 +1,149 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define TAM 5
+
+typedef struct Fila {
+    float VetorElementos[TAM];
+    int Inicio, fim;
+    int Qte;
+} Fila;
+
+void inicializar(Fila *pf) {
+    pf->Inicio = 0;
+    pf->fim = 0;
+    pf->Qte = 0;
+    printf("Fila inicializada.\n");
+}
+
+int cheia(Fila *pf) {
+    return (pf->Qte == TAM);
+}
+
+int vazia(Fila *pf) {
+    return (pf->Qte == 0);
+}
+
+void Inserir(Fila *pf) {
+    float valor;
+    if (cheia(pf)) {
+        printf("Fila cheia, não é possível inserir.\n");
+        return;
+    }
+
+    printf("Digite o valor que deseja inserir: ");
+    scanf("%f", &valor);
+
+    pf->VetorElementos[pf->fim] = valor;
+    pf->fim = (pf->fim + 1) % TAM;
+    pf->Qte++;
+
+    printf("Elemento adicionado com sucesso.\n");
+}
+
+int remover(Fila *pf) {
+    if (vazia(pf)) {
+        printf("Fila vazia, nada a remover.\n");
+        return -1;
+    }
+
+    int temp = pf->VetorElementos[pf->Inicio];
+    pf->Inicio = (pf->Inicio + 1) % TAM;
+    pf->Qte--;
+
+    return temp;
+}
+
+int buscarValor(Fila *pf) {
+    float valor;
+    if (vazia(pf)) {
+        printf("A fila está vazia.\n");
+        return -1;
+    }
+
+    printf("Digite o valor que está procurando: ");
+    scanf("%f", &valor);
+
+    int i = pf->Inicio;
+    for (int count = 0; count < pf->Qte; count++) {
+        if (pf->VetorElementos[i] == valor) {
+            printf("Valor %.2f encontrado na posição lógica %d.\n", valor, i);
+            return i;
+        }
+        i = (i + 1) % TAM;
+    }
+
+    printf("Valor não encontrado.\n");
+    return -1;
+}
+
+void imprimirFila(Fila *pf) {
+    if (vazia(pf)) {
+        printf("Fila vazia.\n");
+        return;
+    }
+
+    printf("Fila: ");
+    int i = pf->Inicio;
+    for (int count = 0; count < pf->Qte; count++) {
+        printf("%.2f ", pf->VetorElementos[i]);
+        i = (i + 1) % TAM;
+    }
+    printf("\n");
+}
+
+int main() {
+    int opcao = 0;
+    Fila pf;
+    inicializar(&pf); // Inicializa automaticamente
+
+    do {
+        printf("\n--- MENU ---\n");
+        printf("1 - Verificar se está cheia\n");
+        printf("2 - Verificar se está vazia\n");
+        printf("3 - Inserir um elemento\n");
+        printf("4 - Remover um elemento\n");
+        printf("5 - Buscar um valor\n");
+        printf("6 - Imprimir fila\n");
+        printf("7 - Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                if (cheia(&pf))
+                    printf("Fila está cheia.\n");
+                else
+                    printf("Fila não está cheia.\n");
+                break;
+            case 2:
+                if (vazia(&pf))
+                    printf("Fila está vazia.\n");
+                else
+                    printf("Fila contém elementos.\n");
+                break;
+            case 3:
+                Inserir(&pf);
+                break;
+            case 4: {
+                int valor_removido = remover(&pf);
+                if (valor_removido != -1)
+                    printf("Valor removido: %d\n", valor_removido);
+                break;
+            }
+            case 5:
+                buscarValor(&pf);
+                break;
+            case 6:
+                imprimirFila(&pf);
+                break;
+            case 7:
+                printf("Saindo do programa.\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+        }
+    } while (opcao != 7);
+
+    return 0;
+}
